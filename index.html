@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="id">
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -250,8 +250,9 @@
 
     .plans-title {
       font-size: 13px;
-      font-weight: 700;
+      font-weight: 800;
       color: #f3e8ff;
+      letter-spacing: 0.3px;
     }
 
     .plans-note {
@@ -284,8 +285,8 @@
 
     .plan-card.featured {
       grid-column: span 2;
-      background: linear-gradient(135deg, rgba(88, 28, 135, 0.38), rgba(24, 17, 40, 0.92));
-      border-color: rgba(216, 180, 254, 0.5);
+      background: linear-gradient(135deg, rgba(88, 28, 135, 0.42), rgba(24, 17, 40, 0.94));
+      border-color: rgba(216, 180, 254, 0.55);
     }
 
     .plan-top {
@@ -302,7 +303,7 @@
     }
 
     .plan-price {
-      font-size: 12px;
+      font-size: 11.5px;
       font-weight: 800;
       color: var(--purple-bright);
     }
@@ -312,7 +313,7 @@
       padding: 7px 10px;
       border-radius: 8px;
       border: 1px solid rgba(192, 132, 252, 0.35);
-      background: rgba(126, 34, 206, 0.28);
+      background: rgba(126, 34, 206, 0.32);
       color: #f5ebff;
       font-size: 11.5px;
       font-weight: 700;
@@ -321,25 +322,36 @@
     }
 
     .plan-btn:hover {
-      background: rgba(147, 51, 234, 0.55);
+      background: rgba(147, 51, 234, 0.6);
     }
 
     .saweria-link {
-      display: block;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
       margin-top: 12px;
       text-align: center;
-      font-size: 12px;
-      font-weight: 700;
-      color: var(--purple-bright);
+      font-size: 12.5px;
+      font-weight: 800;
+      color: #ffffff;
       text-decoration: none;
-      padding: 8px 10px;
-      border-radius: 10px;
-      border: 1px solid rgba(192, 132, 252, 0.28);
-      background: rgba(24, 17, 40, 0.65);
+      padding: 10px 12px;
+      border-radius: 11px;
+      border: 1px solid rgba(216, 180, 254, 0.45);
+      background: linear-gradient(135deg, rgba(126, 34, 206, 0.45), rgba(88, 28, 135, 0.45));
+      transition: filter 0.15s ease;
     }
 
     .saweria-link:hover {
-      background: rgba(126, 34, 206, 0.25);
+      filter: brightness(1.12);
+    }
+
+    .saweria-link img {
+      width: 18px;
+      height: 18px;
+      border-radius: 5px;
+      object-fit: cover;
     }
   </style>
 </head>
@@ -358,73 +370,74 @@
             </div>
           </div>
           <div>
-            <h1 class="brand-title">HANX HUB <span class="pro-badge">KEY PORTAL</span></h1>
-            <p class="brand-sub">Auto-generate key • Terikat ke username Roblox</p>
+            <h1 class="brand-title">HANX HUB <span class="pro-badge">PREMIUM</span></h1>
+            <p class="brand-sub">Auto-generated key • Bound to Roblox username</p>
           </div>
         </header>
 
         <div class="key-panel">
           <div class="key-label">
-            <span>FREE KEY (24 JAM)</span>
+            <span>FREE KEY (24H)</span>
             <span id="statusBadge">ACTIVE</span>
           </div>
-          <div id="keyBox" class="key-code">Memuat key…</div>
+          <div id="keyBox" class="key-code">Loading key…</div>
         </div>
 
-        <div id="metaBox" class="meta">Mendeteksi identitas akun…</div>
+        <div id="metaBox" class="meta">Detecting account identity…</div>
         <div id="errBox" class="err"></div>
         <button id="copyBtn" class="btn-primary" type="button" disabled>Copy Key</button>
 
-        <section class="plans-section" aria-label="Paket Key Berbayar">
+        <section class="plans-section" aria-label="Buy Premium Key Plans">
           <div class="plans-head">
-            <span class="plans-title">💎 Upgrade Key Durasi</span>
+            <span class="plans-title">👑 Buy Premium</span>
             <span class="plans-note">1 Key = 1 Username</span>
           </div>
 
           <div class="plans-grid">
             <div class="plan-card">
               <div class="plan-top">
-                <span class="plan-name">1 Hari</span>
-                <span class="plan-price">Gratis / Lite</span>
+                <span class="plan-name">1 Day</span>
+                <span class="plan-price">Free / Lite</span>
               </div>
-              <button class="plan-btn" type="button" data-plan="1d">Pilih 1 Hari</button>
+              <button class="plan-btn" type="button" data-plan="1d">Use 1 Day</button>
             </div>
 
             <div class="plan-card">
               <div class="plan-top">
-                <span class="plan-name">3 Hari</span>
-                <span class="plan-price">Paket 3D</span>
+                <span class="plan-name">3 Days</span>
+                <span class="plan-price">Premium 3D</span>
               </div>
-              <button class="plan-btn" type="button" data-plan="3d">Beli 3 Hari</button>
+              <button class="plan-btn" type="button" data-plan="3d">Buy Premium</button>
             </div>
 
             <div class="plan-card">
               <div class="plan-top">
-                <span class="plan-name">7 Hari</span>
-                <span class="plan-price">Paket 7D</span>
+                <span class="plan-name">7 Days</span>
+                <span class="plan-price">Premium 7D</span>
               </div>
-              <button class="plan-btn" type="button" data-plan="7d">Beli 7 Hari</button>
+              <button class="plan-btn" type="button" data-plan="7d">Buy Premium</button>
             </div>
 
             <div class="plan-card">
               <div class="plan-top">
-                <span class="plan-name">30 Hari</span>
-                <span class="plan-price">Paket 30D</span>
+                <span class="plan-name">30 Days</span>
+                <span class="plan-price">Premium 30D</span>
               </div>
-              <button class="plan-btn" type="button" data-plan="30d">Beli 30 Hari</button>
+              <button class="plan-btn" type="button" data-plan="30d">Buy Premium</button>
             </div>
 
             <div class="plan-card featured">
               <div class="plan-top">
-                <span class="plan-name">👑 Permanent Access</span>
-                <span class="plan-price">Lifetime Key</span>
+                <span class="plan-name">👑 Permanent</span>
+                <span class="plan-price">Lifetime</span>
               </div>
-              <button class="plan-btn" type="button" data-plan="perm">Beli Permanent</button>
+              <button class="plan-btn" type="button" data-plan="perm">Buy Premium</button>
             </div>
           </div>
 
           <a class="saweria-link" href="https://saweria.co/hanxhub" target="_blank" rel="noopener noreferrer">
-            ☕ Order Key via Saweria (saweria.co/hanxhub)
+            <img id="saweriaLogo" alt="HANX HUB" />
+            <span>Buy Premium on Saweria (saweria.co/hanxhub)</span>
           </a>
         </section>
       </div>
@@ -442,6 +455,7 @@
     const errBox = document.getElementById("errBox");
     const copyBtn = document.getElementById("copyBtn");
     const hubLogo = document.getElementById("hubLogo");
+    const saweriaLogo = document.getElementById("saweriaLogo");
     const watermark = document.getElementById("watermark");
 
     (async function loadBrandLogo() {
@@ -459,6 +473,7 @@
       `);
 
       hubLogo.src = fallbackSvg;
+      saweriaLogo.src = fallbackSvg;
       watermark.style.backgroundImage = `url("${fallbackSvg}")`;
 
       try {
@@ -468,6 +483,7 @@
         const imgUrl = json && json.data && json.data[0] && json.data[0].imageUrl;
         if (imgUrl) {
           hubLogo.src = imgUrl;
+          saweriaLogo.src = imgUrl;
           watermark.style.backgroundImage = `url("${imgUrl}")`;
         }
       } catch (_) {}
@@ -506,28 +522,28 @@
 
         const data = await res.json();
         if (!res.ok || !data || data.valid !== true || !data.key) {
-          keyBox.textContent = "GAGAL";
-          errBox.textContent = (data && data.message) || "Gagal mengambil key dari server.";
+          keyBox.textContent = "FAILED";
+          errBox.textContent = (data && data.message) || "Failed to fetch key from server.";
           return;
         }
 
         keyBox.textContent = data.key;
-        const expText = data.expires_at ? new Date(data.expires_at).toLocaleString("id-ID") : "1 hari";
-        metaBox.textContent = `${account.label} • Berlaku sampai: ${expText}`;
+        const expText = data.expires_at ? new Date(data.expires_at).toLocaleString("en-US") : "1 day";
+        metaBox.textContent = `${account.label} • Expires: ${expText}`;
         copyBtn.disabled = false;
 
         copyBtn.onclick = async () => {
           try {
             await navigator.clipboard.writeText(data.key);
-            copyBtn.textContent = "✔ Key Tersalin!";
+            copyBtn.textContent = "✔ Copied!";
             setTimeout(() => { copyBtn.textContent = "Copy Key"; }, 1500);
           } catch {
-            errBox.textContent = "Gagal menyalin otomatis, silakan salin manual.";
+            errBox.textContent = "Auto-copy failed, please copy manually.";
           }
         };
       } catch (_) {
         keyBox.textContent = "ERROR";
-        errBox.textContent = "Tidak dapat terhubung ke Supabase.";
+        errBox.textContent = "Unable to connect to Supabase.";
       }
     }
 
@@ -539,7 +555,7 @@
           return;
         }
         errBox.style.color = "#d8b4fe";
-        errBox.textContent = `Paket ${plan.toUpperCase()} dipilih — membuka Saweria...`;
+        errBox.textContent = `Buy Premium (${plan.toUpperCase()}) — opening Saweria...`;
         window.open(ORDER_LINK, "_blank", "noopener,noreferrer");
       });
     });

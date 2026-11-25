@@ -3,109 +3,68 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>HANX HUB · Get Key</title>
+  <title>HANX HUB KEY</title>
   <style>
     * { box-sizing: border-box; font-family: system-ui, -apple-system, sans-serif; }
     body {
-      margin: 0; min-height: 100vh; display: grid; place-items: center;
-      background: #0d0b14; color: #f8f5ff; padding: 16px;
+      margin: 0; min-height: 100vh; display: grid; place-items: center; padding: 16px;
+      background: radial-gradient(circle at top, #24123d, #0d0b14 70%); color: #f8f5ff;
     }
     .card {
-      width: 100%; max-width: 420px; background: #161224;
-      border: 1px solid rgba(178, 98, 255, 0.35); border-radius: 14px;
-      padding: 24px; box-shadow: 0 12px 32px rgba(0, 0, 0, 0.45);
+      width: 100%; max-width: 420px; background: #141021; border: 1px solid #523e7c;
+      border-radius: 16px; padding: 24px; box-shadow: 0 20px 50px rgba(0,0,0,.55);
     }
     h1 { margin: 0 0 6px; font-size: 20px; }
-    p { margin: 0 0 16px; font-size: 13px; color: #9c94b2; line-height: 1.45; }
-    label { display: block; font-size: 12px; color: #c7bede; margin-bottom: 6px; }
-    input {
-      width: 100%; padding: 11px 12px; border-radius: 8px;
-      border: 1px solid #523e7c; background: #241838; color: #fff;
-      font-size: 13px; margin-bottom: 14px;
+    p { margin: 0 0 18px; font-size: 13px; color: #9c94b2; line-height: 1.5; }
+    .key-box {
+      background: #1d1630; border: 1px solid #7e49c9; border-radius: 12px;
+      padding: 16px; text-align: center; font-size: 18px; font-weight: 700;
+      letter-spacing: 1px; color: #d8b4fe; word-break: break-all; margin-bottom: 12px;
     }
+    .meta { font-size: 12px; color: #9c94b2; margin-bottom: 16px; text-align: center; }
+    .err { color: #fb7185; font-size: 13px; text-align: center; margin-bottom: 12px; }
     button {
-      width: 100%; padding: 11px; border: 0; border-radius: 8px;
-      background: #5c22a8; color: #fff; font-weight: 700; font-size: 14px;
-      cursor: pointer;
+      width: 100%; padding: 12px; border: 0; border-radius: 10px; cursor: pointer;
+      background: #7e22ce; color: #fff; font-weight: 700; font-size: 14px;
     }
-    button:hover:not(:disabled) { background: #702bc9; }
-    button:disabled { opacity: 0.7; cursor: not-allowed; }
-    .box {
-      margin-top: 16px; padding: 12px; border-radius: 8px;
-      background: #100c1b; border: 1px dashed #6f4ca8; display: none;
-    }
-    .key-val { font-family: monospace; font-size: 15px; color: #50c878; word-break: break-all; margin: 6px 0 10px; }
-    .copy-btn { background: #28203c; color: #b262ff; font-size: 12px; padding: 8px; }
-    .msg { margin-top: 10px; font-size: 12px; color: #e11d48; min-height: 16px; }
+    button:hover { background: #9333ea; }
   </style>
 </head>
 <body>
   <div class="card">
     <h1>🔑 HANX HUB KEY</h1>
-    <p>1 device = 1 key acak (HANX-...). Otomatis ter-reset setelah 1 hari (24 jam).</p>
-
-    <label for="hwidInput">Device ID Terdeteksi (bisa diganti HWID manual)</label>
-    <input id="hwidInput" type="text" placeholder="Mendeteksi device..." />
-
-    <button id="genBtn" type="button">Menyiapkan Key...</button>
-    <div id="msg" class="msg"></div>
-
-    <div id="resultBox" class="box">
-      <label>Key Kamu:</label>
-      <div id="keyOut" class="key-val"></div>
-      <div id="expOut" style="font-size:12px;color:#9c94b2;margin-bottom:10px;"></div>
-      <button id="copyBtn" class="copy-btn" type="button">Salin Key</button>
-    </div>
+    <p>Key otomatis dibuat dan terikat ke device kamu (berlaku 1 hari / 24 jam).</p>
+    <div id="keyBox" class="key-box">Memuat key…</div>
+    <div id="metaBox" class="meta">Mendeteksi device…</div>
+    <div id="errBox" class="err"></div>
+    <button id="copyBtn" type="button" disabled>Copy Key</button>
   </div>
 
   <script>
     const SUPABASE_URL = "https://hmfmhraaoowaclkjgoyo.supabase.co";
     const SUPABASE_ANON = "sb_publishable_Epc5E_uB8e0BiOwnxXPDIQ_33BrW5Di";
-    const LOAD_SECONDS = 5;
 
-    const hwidInput = document.getElementById("hwidInput");
-    const genBtn = document.getElementById("genBtn");
-    const msgEl = document.getElementById("msg");
-    const resultBox = document.getElementById("resultBox");
-    const keyOut = document.getElementById("keyOut");
-    const expOut = document.getElementById("expOut");
+    const keyBox = document.getElementById("keyBox");
+    const metaBox = document.getElementById("metaBox");
+    const errBox = document.getElementById("errBox");
     const copyBtn = document.getElementById("copyBtn");
 
-    function getAutoDeviceId() {
-      const storageKey = "hanxhub_auto_dev_id";
-      let saved = localStorage.getItem(storageKey);
-      if (!saved) {
-        const fp = [
-          navigator.platform || "dev",
-          screen.width + "x" + screen.height,
-          navigator.language || "id",
-          Intl.DateTimeFormat().resolvedOptions().timeZone || "tz",
-          Math.random().toString(36).slice(2, 10).toUpperCase()
-        ].join("-");
-        saved = "DEV-" + fp.replace(/[^A-Za-z0-9_-]/g, "").slice(0, 24);
-        localStorage.setItem(storageKey, saved);
+    function resolveDeviceId() {
+      const params = new URLSearchParams(window.location.search);
+      const urlHwid = (params.get("hwid") || "").trim();
+      if (urlHwid) return { id: urlHwid, source: "Roblox Device ID" };
+
+      let webId = localStorage.getItem("hanx_web_device_id");
+      if (!webId) {
+        webId = "WEB_" + (crypto.randomUUID ? crypto.randomUUID() : Math.random().toString(36).slice(2, 14));
+        localStorage.setItem("hanx_web_device_id", webId);
       }
-      return saved;
+      return { id: webId, source: "Browser Device ID" };
     }
 
-    function randomHanxKey() {
-      const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
-      let code = "";
-      for (let i = 0; i < 12; i++) {
-        code += chars[Math.floor(Math.random() * chars.length)];
-      }
-      return "HANX-" + code;
-    }
-
-    async function runKeyFlow(hwid) {
-      msgEl.style.color = "#9c94b2";
-      msgEl.textContent = "Mengecek perangkat & menyiapkan key...";
-      resultBox.style.display = "none";
-      genBtn.disabled = true;
-
-      const startTime = Date.now();
-      let rpcData = null;
-      let rpcError = null;
+    async function loadKey() {
+      const device = resolveDeviceId();
+      metaBox.textContent = `Sumber ID: ${device.source}`;
 
       try {
         const res = await fetch(`${SUPABASE_URL}/rest/v1/rpc/issue_or_check_key`, {
@@ -113,69 +72,42 @@
           headers: {
             "Content-Type": "application/json",
             "apikey": SUPABASE_ANON,
-            "Authorization": `Bearer ${SUPABASE_ANON}`
+            "Authorization": `Bearer ${SUPABASE_ANON}`,
           },
           body: JSON.stringify({
-            p_hwid: hwid,
-            p_key: randomHanxKey(),
-            p_mode: "generate"
-          })
+            p_hwid: device.id,
+            p_mode: "issue",
+          }),
         });
 
         const data = await res.json();
-        if (!res.ok || !data || data.valid !== true) {
-          throw new Error((data && data.message) || "Gagal menyiapkan key.");
+        if (!res.ok || !data || data.valid !== true || !data.key) {
+          keyBox.textContent = "GAGAL";
+          errBox.textContent = (data && data.message) || "Gagal mengambil key dari server.";
+          return;
         }
-        rpcData = data;
-      } catch (err) {
-        rpcError = err.message || "Terjadi kesalahan.";
+
+        keyBox.textContent = data.key;
+        const expText = data.expires_at ? new Date(data.expires_at).toLocaleString("id-ID") : "1 hari";
+        metaBox.textContent = `Berlaku sampai: ${expText}`;
+        copyBtn.disabled = false;
+
+        copyBtn.onclick = async () => {
+          try {
+            await navigator.clipboard.writeText(data.key);
+            copyBtn.textContent = "✔ Key Tersalin!";
+            setTimeout(() => { copyBtn.textContent = "Copy Key"; }, 1500);
+          } catch {
+            errBox.textContent = "Gagal menyalin otomatis, silakan salin manual.";
+          }
+        };
+      } catch (e) {
+        keyBox.textContent = "ERROR";
+        errBox.textContent = "Tidak dapat terhubung ke Supabase.";
       }
-
-      for (let s = LOAD_SECONDS; s >= 1; s--) {
-        genBtn.textContent = `Menyiapkan Key (${s}d)...`;
-        await new Promise((r) => setTimeout(r, 1000));
-      }
-
-      if (rpcError || !rpcData) {
-        msgEl.style.color = "#e11d48";
-        msgEl.textContent = rpcError || "Gagal menyiapkan key.";
-        genBtn.disabled = false;
-        genBtn.textContent = "Ambil Key (1 Hari)";
-        return;
-      }
-
-      const finalKey = String(rpcData.key || "").startsWith("HANX-")
-        ? rpcData.key
-        : "HANX-" + String(rpcData.key || "").replace(/^HANX-?/i, "");
-
-      keyOut.textContent = finalKey;
-      const expTs = Number(rpcData.expires_at) || Math.floor((startTime + 86400000) / 1000);
-      const expDate = new Date(expTs * 1000);
-      expOut.textContent = "Reset pada: " + expDate.toLocaleString("id-ID");
-      resultBox.style.display = "block";
-      msgEl.style.color = "#50c878";
-      msgEl.textContent = "Key siap digunakan!";
-      genBtn.disabled = false;
-      genBtn.textContent = "Ambil Key (1 Hari)";
     }
 
-    hwidInput.value = getAutoDeviceId();
-    runKeyFlow(hwidInput.value.trim());
-
-    genBtn.addEventListener("click", () => {
-      const hwid = hwidInput.value.trim() || getAutoDeviceId();
-      hwidInput.value = hwid;
-      runKeyFlow(hwid);
-    });
-
-    copyBtn.addEventListener("click", async () => {
-      if (!keyOut.textContent) return;
-      try {
-        await navigator.clipboard.writeText(keyOut.textContent);
-        copyBtn.textContent = "Tersalin!";
-        setTimeout(() => { copyBtn.textContent = "Salin Key"; }, 1500);
-      } catch (_) {}
-    });
+    loadKey();
   </script>
 </body>
 </html>

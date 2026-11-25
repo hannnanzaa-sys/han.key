@@ -28,7 +28,8 @@
       background: #5c22a8; color: #fff; font-weight: 700; font-size: 14px;
       cursor: pointer;
     }
-    button:hover { background: #702bc9; }
+    button:hover:not(:disabled) { background: #702bc9; }
+    button:disabled { opacity: 0.7; cursor: not-allowed; }
     .box {
       margin-top: 16px; padding: 12px; border-radius: 8px;
       background: #100c1b; border: 1px dashed #6f4ca8; display: none;
@@ -41,12 +42,12 @@
 <body>
   <div class="card">
     <h1>🔑 HANX HUB KEY</h1>
-    <p>1 device = 1 key acak. Key otomatis ter-reset setelah 1 hari (24 jam).</p>
+    <p>1 device = 1 key acak (HANX-...). Otomatis ter-reset setelah 1 hari (24 jam).</p>
 
-    <label for="hwidInput">Device ID (dari UI HANX HUB)</label>
-    <input id="hwidInput" type="text" placeholder="Tempel Device ID kamu di sini..." />
+    <label for="hwidInput">Device ID Terdeteksi (bisa diganti HWID manual)</label>
+    <input id="hwidInput" type="text" placeholder="Mendeteksi device..." />
 
-    <button id="genBtn" type="button">Ambil Key (1 Hari)</button>
+    <button id="genBtn" type="button">Menyiapkan Key...</button>
     <div id="msg" class="msg"></div>
 
     <div id="resultBox" class="box">
@@ -60,6 +61,7 @@
   <script>
     const SUPABASE_URL = "https://hmfmhraaoowaclkjgoyo.supabase.co";
     const SUPABASE_ANON = "sb_publishable_Epc5E_uB8e0BiOwnxXPDIQ_33BrW5Di";
+    const LOAD_SECONDS = 5;
 
     const hwidInput = document.getElementById("hwidInput");
     const genBtn = document.getElementById("genBtn");
@@ -69,18 +71,41 @@
     const expOut = document.getElementById("expOut");
     const copyBtn = document.getElementById("copyBtn");
 
-    genBtn.addEventListener("click", async () => {
-      const hwid = hwidInput.value.trim();
-      msgEl.style.color = "#e11d48";
-      msgEl.textContent = "";
-
-      if (!hwid) {
-        msgEl.textContent = "Tempel Device ID terlebih dahulu.";
-        return;
+    function getAutoDeviceId() {
+      const storageKey = "hanxhub_auto_dev_id";
+      let saved = localStorage.getItem(storageKey);
+      if (!saved) {
+        const fp = [
+          navigator.platform || "dev",
+          screen.width + "x" + screen.height,
+          navigator.language || "id",
+          Intl.DateTimeFormat().resolvedOptions().timeZone || "tz",
+          Math.random().toString(36).slice(2, 10).toUpperCase()
+        ].join("-");
+        saved = "DEV-" + fp.replace(/[^A-Za-z0-9_-]/g, "").slice(0, 24);
+        localStorage.setItem(storageKey, saved);
       }
+      return saved;
+    }
 
+    function randomHanxKey() {
+      const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+      let code = "";
+      for (let i = 0; i < 12; i++) {
+        code += chars[Math.floor(Math.random() * chars.length)];
+      }
+      return "HANX-" + code;
+    }
+
+    async function runKeyFlow(hwid) {
+      msgEl.style.color = "#9c94b2";
+      msgEl.textContent = "Mengecek perangkat & menyiapkan key...";
+      resultBox.style.display = "none";
       genBtn.disabled = true;
-      genBtn.textContent = "Membuat Key...";
+
+      const startTime = Date.now();
+      let rpcData = null;
+      let rpcError = null;
 
       try {
         const res = await fetch(`${SUPABASE_URL}/rest/v1/rpc/issue_or_check_key`, {
@@ -92,29 +117,55 @@
           },
           body: JSON.stringify({
             p_hwid: hwid,
-            p_key: null,
+            p_key: randomHanxKey(),
             p_mode: "generate"
           })
         });
 
         const data = await res.json();
         if (!res.ok || !data || data.valid !== true) {
-          throw new Error((data && data.message) || "Gagal membuat key.");
+          throw new Error((data && data.message) || "Gagal menyiapkan key.");
         }
-
-        keyOut.textContent = data.key;
-        const expDate = new Date(Number(data.expires_at) * 1000);
-        expOut.textContent = "Reset pada: " + expDate.toLocaleString("id-ID");
-        resultBox.style.display = "block";
-        msgEl.style.color = "#50c878";
-        msgEl.textContent = "Key siap digunakan!";
+        rpcData = data;
       } catch (err) {
-        resultBox.style.display = "none";
-        msgEl.textContent = err.message || "Terjadi kesalahan.";
-      } finally {
+        rpcError = err.message || "Terjadi kesalahan.";
+      }
+
+      for (let s = LOAD_SECONDS; s >= 1; s--) {
+        genBtn.textContent = `Menyiapkan Key (${s}d)...`;
+        await new Promise((r) => setTimeout(r, 1000));
+      }
+
+      if (rpcError || !rpcData) {
+        msgEl.style.color = "#e11d48";
+        msgEl.textContent = rpcError || "Gagal menyiapkan key.";
         genBtn.disabled = false;
         genBtn.textContent = "Ambil Key (1 Hari)";
+        return;
       }
+
+      const finalKey = String(rpcData.key || "").startsWith("HANX-")
+        ? rpcData.key
+        : "HANX-" + String(rpcData.key || "").replace(/^HANX-?/i, "");
+
+      keyOut.textContent = finalKey;
+      const expTs = Number(rpcData.expires_at) || Math.floor((startTime + 86400000) / 1000);
+      const expDate = new Date(expTs * 1000);
+      expOut.textContent = "Reset pada: " + expDate.toLocaleString("id-ID");
+      resultBox.style.display = "block";
+      msgEl.style.color = "#50c878";
+      msgEl.textContent = "Key siap digunakan!";
+      genBtn.disabled = false;
+      genBtn.textContent = "Ambil Key (1 Hari)";
+    }
+
+    hwidInput.value = getAutoDeviceId();
+    runKeyFlow(hwidInput.value.trim());
+
+    genBtn.addEventListener("click", () => {
+      const hwid = hwidInput.value.trim() || getAutoDeviceId();
+      hwidInput.value = hwid;
+      runKeyFlow(hwid);
     });
 
     copyBtn.addEventListener("click", async () => {

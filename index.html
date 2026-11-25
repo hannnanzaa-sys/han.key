@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>HANX HUB · Get Key</title>
+  <style>
+    * { box-sizing: border-box; font-family: system-ui, -apple-system, sans-serif; }
+    body {
+      margin: 0; min-height: 100vh; display: grid; place-items: center;
+      background: #0d0b14; color: #f8f5ff; padding: 16px;
+    }
+    .card {
+      width: 100%; max-width: 420px; background: #161224;
+      border: 1px solid rgba(178, 98, 255, 0.35); border-radius: 14px;
+      padding: 24px; box-shadow: 0 12px 32px rgba(0, 0, 0, 0.45);
+    }
+    h1 { margin: 0 0 6px; font-size: 20px; }
+    p { margin: 0 0 16px; font-size: 13px; color: #9c94b2; line-height: 1.45; }
+    label { display: block; font-size: 12px; color: #c7bede; margin-bottom: 6px; }
+    input {
+      width: 100%; padding: 11px 12px; border-radius: 8px;
+      border: 1px solid #523e7c; background: #241838; color: #fff;
+      font-size: 13px; margin-bottom: 14px;
+    }
+    button {
+      width: 100%; padding: 11px; border: 0; border-radius: 8px;
+      background: #5c22a8; color: #fff; font-weight: 700; font-size: 14px;
+      cursor: pointer;
+    }
+    button:hover { background: #702bc9; }
+    .box {
+      margin-top: 16px; padding: 12px; border-radius: 8px;
+      background: #100c1b; border: 1px dashed #6f4ca8; display: none;
+    }
+    .key-val { font-family: monospace; font-size: 15px; color: #50c878; word-break: break-all; margin: 6px 0 10px; }
+    .copy-btn { background: #28203c; color: #b262ff; font-size: 12px; padding: 8px; }
+    .msg { margin-top: 10px; font-size: 12px; color: #e11d48; min-height: 16px; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1>🔑 HANX HUB KEY</h1>
+    <p>1 device = 1 key acak. Key otomatis ter-reset setelah 1 hari (24 jam).</p>
+
+    <label for="hwidInput">Device ID (dari UI HANX HUB)</label>
+    <input id="hwidInput" type="text" placeholder="Tempel Device ID kamu di sini..." />
+
+    <button id="genBtn" type="button">Ambil Key (1 Hari)</button>
+    <div id="msg" class="msg"></div>
+
+    <div id="resultBox" class="box">
+      <label>Key Kamu:</label>
+      <div id="keyOut" class="key-val"></div>
+      <div id="expOut" style="font-size:12px;color:#9c94b2;margin-bottom:10px;"></div>
+      <button id="copyBtn" class="copy-btn" type="button">Salin Key</button>
+    </div>
+  </div>
+
+  <script>
+    const SUPABASE_URL = "https://hmfmhraaoowaclkjgoyo.supabase.co";
+    const SUPABASE_ANON = "YOUR_PUBLISHABLE_KEY_HERE";
+
+    const hwidInput = document.getElementById("hwidInput");
+    const genBtn = document.getElementById("genBtn");
+    const msgEl = document.getElementById("msg");
+    const resultBox = document.getElementById("resultBox");
+    const keyOut = document.getElementById("keyOut");
+    const expOut = document.getElementById("expOut");
+    const copyBtn = document.getElementById("copyBtn");
+
+    genBtn.addEventListener("click", async () => {
+      const hwid = hwidInput.value.trim();
+      msgEl.style.color = "#e11d48";
+      msgEl.textContent = "";
+
+      if (!hwid) {
+        msgEl.textContent = "Tempel Device ID terlebih dahulu.";
+        return;
+      }
+
+      genBtn.disabled = true;
+      genBtn.textContent = "Membuat Key...";
+
+      try {
+        const res = await fetch(`${SUPABASE_URL}/rest/v1/rpc/issue_or_check_key`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "apikey": SUPABASE_ANON,
+            "Authorization": `Bearer ${SUPABASE_ANON}`
+          },
+          body: JSON.stringify({
+            p_hwid: hwid,
+            p_key: null,
+            p_mode: "generate"
+          })
+        });
+
+        const data = await res.json();
+        if (!res.ok || !data || data.valid !== true) {
+          throw new Error((data && data.message) || "Gagal membuat key.");
+        }
+
+        keyOut.textContent = data.key;
+        const expDate = new Date(Number(data.expires_at) * 1000);
+        expOut.textContent = "Reset pada: " + expDate.toLocaleString("id-ID");
+        resultBox.style.display = "block";
+        msgEl.style.color = "#50c878";
+        msgEl.textContent = "Key siap digunakan!";
+      } catch (err) {
+        resultBox.style.display = "none";
+        msgEl.textContent = err.message || "Terjadi kesalahan.";
+      } finally {
+        genBtn.disabled = false;
+        genBtn.textContent = "Ambil Key (1 Hari)";
+      }
+    });
+
+    copyBtn.addEventListener("click", async () => {
+      if (!keyOut.textContent) return;
+      try {
+        await navigator.clipboard.writeText(keyOut.textContent);
+        copyBtn.textContent = "Tersalin!";
+        setTimeout(() => { copyBtn.textContent = "Salin Key"; }, 1500);
+      } catch (_) {}
+    });
+  </script>
+</body>
+</html>

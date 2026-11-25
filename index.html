@@ -7,8 +7,8 @@
   <style>
     :root {
       --bg-dark: #090710;
-      --card-bg: rgba(16, 12, 26, 0.88);
-      --surface: rgba(29, 21, 48, 0.82);
+      --card-bg: rgba(16, 12, 26, 0.9);
+      --surface: rgba(29, 21, 48, 0.85);
       --border: rgba(178, 98, 255, 0.35);
       --purple: #9333ea;
       --purple-bright: #c084fc;
@@ -57,7 +57,7 @@
       position: relative;
       z-index: 1;
       width: 100%;
-      max-width: 450px;
+      max-width: 460px;
     }
 
     .card {
@@ -75,12 +75,11 @@
       position: absolute;
       inset: 0;
       background-position: center;
-      background-size: 260px;
+      background-size: 320px auto;
       background-repeat: no-repeat;
       opacity: 0.08;
       pointer-events: none;
       z-index: 0;
-      filter: saturate(1.25);
     }
 
     .content {
@@ -99,15 +98,15 @@
 
     .logo-ring {
       position: relative;
-      width: 54px;
-      height: 54px;
-      border-radius: 15px;
+      width: 78px;
+      height: 48px;
+      border-radius: 13px;
       padding: 2px;
       background: linear-gradient(135deg, #7e22ce, #ffffff 50%, #6b21a8);
       background-size: 240% 240%;
       animation: lightSweep 3.2s linear infinite;
       flex-shrink: 0;
-      box-shadow: 0 0 20px rgba(168, 85, 247, 0.45);
+      box-shadow: 0 0 22px rgba(168, 85, 247, 0.5);
     }
 
     @keyframes lightSweep {
@@ -119,8 +118,8 @@
     .logo-inner {
       width: 100%;
       height: 100%;
-      border-radius: 13px;
-      background: #120d1f;
+      border-radius: 11px;
+      background: #090710;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -130,7 +129,7 @@
     .logo-inner img {
       width: 100%;
       height: 100%;
-      object-fit: cover;
+      object-fit: contain;
       display: block;
     }
 
@@ -325,6 +324,39 @@
       background: rgba(147, 51, 234, 0.6);
     }
 
+    .custom-box {
+      margin-top: 10px;
+      background: rgba(24, 17, 40, 0.85);
+      border: 1px solid rgba(148, 110, 210, 0.28);
+      border-radius: 12px;
+      padding: 11px;
+    }
+
+    .custom-row {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      margin-top: 8px;
+    }
+
+    .custom-input {
+      width: 92px;
+      padding: 8px 10px;
+      border-radius: 8px;
+      border: 1px solid rgba(192, 132, 252, 0.35);
+      background: rgba(11, 8, 19, 0.9);
+      color: #fff;
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .custom-est {
+      flex: 1;
+      font-size: 11.5px;
+      color: var(--purple-bright);
+      font-weight: 700;
+    }
+
     .saweria-link {
       display: flex;
       align-items: center;
@@ -348,10 +380,11 @@
     }
 
     .saweria-link img {
-      width: 18px;
+      width: 28px;
       height: 18px;
-      border-radius: 5px;
-      object-fit: cover;
+      border-radius: 4px;
+      object-fit: contain;
+      background: #090710;
     }
   </style>
 </head>
@@ -405,7 +438,7 @@
             <div class="plan-card">
               <div class="plan-top">
                 <span class="plan-name">3 Days</span>
-                <span class="plan-price">Premium 3D</span>
+                <span class="plan-price">Rp10.000</span>
               </div>
               <button class="plan-btn" type="button" data-plan="3d">Buy Premium</button>
             </div>
@@ -413,7 +446,7 @@
             <div class="plan-card">
               <div class="plan-top">
                 <span class="plan-name">7 Days</span>
-                <span class="plan-price">Premium 7D</span>
+                <span class="plan-price">Rp20.000</span>
               </div>
               <button class="plan-btn" type="button" data-plan="7d">Buy Premium</button>
             </div>
@@ -421,7 +454,7 @@
             <div class="plan-card">
               <div class="plan-top">
                 <span class="plan-name">30 Days</span>
-                <span class="plan-price">Premium 30D</span>
+                <span class="plan-price">Rp50.000</span>
               </div>
               <button class="plan-btn" type="button" data-plan="30d">Buy Premium</button>
             </div>
@@ -429,9 +462,21 @@
             <div class="plan-card featured">
               <div class="plan-top">
                 <span class="plan-name">👑 Permanent</span>
-                <span class="plan-price">Lifetime</span>
+                <span class="plan-price">Rp100.000</span>
               </div>
               <button class="plan-btn" type="button" data-plan="perm">Buy Premium</button>
+            </div>
+          </div>
+
+          <div class="custom-box">
+            <div class="plan-top">
+              <span class="plan-name">🗓 Custom Days Request</span>
+              <span class="plan-price">Rp3.000 / day</span>
+            </div>
+            <div class="custom-row">
+              <input id="customDaysInput" class="custom-input" type="number" min="2" max="365" value="14" />
+              <span id="customEstPrice" class="custom-est">Est: Rp42.000</span>
+              <button id="customBuyBtn" class="plan-btn" style="width:auto;padding:8px 12px;" type="button">Buy Premium</button>
             </div>
           </div>
 
@@ -447,6 +492,7 @@
   <script>
     const SUPABASE_URL = "https://hmfmhraaoowaclkjgoyo.supabase.co";
     const SUPABASE_ANON = "sb_publishable_Epc5E_uB8e0BiOwnxXPDIQ_33BrW5Di";
+    const LOGO_URL = "./HN";
     const ROBLOX_ASSET_ID = "122823093583910";
     const ORDER_LINK = "https://saweria.co/hanxhub";
 
@@ -457,36 +503,42 @@
     const hubLogo = document.getElementById("hubLogo");
     const saweriaLogo = document.getElementById("saweriaLogo");
     const watermark = document.getElementById("watermark");
+    const customDaysInput = document.getElementById("customDaysInput");
+    const customEstPrice = document.getElementById("customEstPrice");
+    const customBuyBtn = document.getElementById("customBuyBtn");
+
+    function applyLogoSrc(src) {
+      hubLogo.src = src;
+      saweriaLogo.src = src;
+      watermark.style.backgroundImage = `url("${src}")`;
+    }
 
     (async function loadBrandLogo() {
       const fallbackSvg = "data:image/svg+xml;utf8," + encodeURIComponent(`
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 192 120">
           <defs>
             <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
               <stop offset="0%" stop-color="#9333ea"/>
               <stop offset="100%" stop-color="#3b0764"/>
             </linearGradient>
           </defs>
-          <rect width="128" height="128" rx="28" fill="url(#g)"/>
-          <text x="64" y="78" text-anchor="middle" fill="#ffffff" font-family="Arial, sans-serif" font-size="44" font-weight="900">HH</text>
+          <rect width="192" height="120" rx="20" fill="url(#g)"/>
+          <text x="96" y="74" text-anchor="middle" fill="#ffffff" font-family="Arial, sans-serif" font-size="42" font-weight="900">HN</text>
         </svg>
       `);
 
-      hubLogo.src = fallbackSvg;
-      saweriaLogo.src = fallbackSvg;
-      watermark.style.backgroundImage = `url("${fallbackSvg}")`;
+      applyLogoSrc(LOGO_URL);
 
-      try {
-        const apiUrl = `https://thumbnails.roblox.com/v1/assets?assetIds=${ROBLX_ASSET_ID}&returnPolicy=PlaceHolder&size=420x420&format=Png&isCircular=false`;
-        const r = await fetch(apiUrl);
-        const json = await r.json();
-        const imgUrl = json && json.data && json.data[0] && json.data[0].imageUrl;
-        if (imgUrl) {
-          hubLogo.src = imgUrl;
-          saweriaLogo.src = imgUrl;
-          watermark.style.backgroundImage = `url("${imgUrl}")`;
-        }
-      } catch (_) {}
+      hubLogo.onerror = async () => {
+        applyLogoSrc(fallbackSvg);
+        try {
+          const apiUrl = `https://thumbnails.roblox.com/v1/assets?assetIds=${ROBLX_ASSET_ID}&returnPolicy=PlaceHolder&size=420x420&format=Png&isCircular=false`;
+          const r = await fetch(apiUrl);
+          const json = await r.json();
+          const imgUrl = json && json.data && json.data[0] && json.data[0].imageUrl;
+          if (imgUrl) applyLogoSrc(imgUrl);
+        } catch (_) {}
+      };
     })();
 
     function resolveAccountId() {
@@ -547,6 +599,22 @@
       }
     }
 
+    function updateCustomPrice() {
+      const days = Math.max(2, Math.min(365, parseInt(customDaysInput.value || "2", 10) || 2));
+      const total = days * 3000;
+      customEstPrice.textContent = `Est: Rp${total.toLocaleString("id-ID")}`;
+      return days;
+    }
+
+    customDaysInput.addEventListener("input", updateCustomPrice);
+
+    customBuyBtn.addEventListener("click", () => {
+      const days = updateCustomPrice();
+      errBox.style.color = "#d8b4fe";
+      errBox.textContent = `Buy Premium (${days} Days) — opening Saweria...`;
+      window.open(ORDER_LINK, "_blank", "noopener,noreferrer");
+    });
+
     document.querySelectorAll(".plan-btn").forEach((btn) => {
       btn.addEventListener("click", () => {
         const plan = btn.getAttribute("data-plan");
@@ -560,6 +628,7 @@
       });
     });
 
+    updateCustomPrice();
     loadKey();
   </script>
 </body>

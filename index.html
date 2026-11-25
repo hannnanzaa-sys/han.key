@@ -28,14 +28,15 @@
       background: #7e22ce; color: #fff; font-weight: 700; font-size: 14px;
     }
     button:hover { background: #9333ea; }
+    button:disabled { opacity: 0.5; cursor: not-allowed; }
   </style>
 </head>
 <body>
   <div class="card">
     <h1>🔑 HANX HUB KEY</h1>
-    <p>Key otomatis dibuat dan terikat ke device kamu (berlaku 1 hari / 24 jam).</p>
+    <p>Key otomatis dibuat dan terikat ke username kamu (berlaku 1 hari / 24 jam).</p>
     <div id="keyBox" class="key-box">Memuat key…</div>
-    <div id="metaBox" class="meta">Mendeteksi device…</div>
+    <div id="metaBox" class="meta">Mendeteksi username…</div>
     <div id="errBox" class="err"></div>
     <button id="copyBtn" type="button" disabled>Copy Key</button>
   </div>
@@ -49,22 +50,22 @@
     const errBox = document.getElementById("errBox");
     const copyBtn = document.getElementById("copyBtn");
 
-    function resolveDeviceId() {
+    function resolveAccountId() {
       const params = new URLSearchParams(window.location.search);
-      const urlHwid = (params.get("hwid") || "").trim();
-      if (urlHwid) return { id: urlHwid, source: "Roblox Device ID" };
+      const urlId = (params.get("hwid") || params.get("user") || params.get("username") || "").trim();
+      if (urlId) return { id: urlId, label: `Akun: ${urlId}` };
 
       let webId = localStorage.getItem("hanx_web_device_id");
       if (!webId) {
         webId = "WEB_" + (crypto.randomUUID ? crypto.randomUUID() : Math.random().toString(36).slice(2, 14));
         localStorage.setItem("hanx_web_device_id", webId);
       }
-      return { id: webId, source: "Browser Device ID" };
+      return { id: webId, label: `Browser ID: ${webId}` };
     }
 
     async function loadKey() {
-      const device = resolveDeviceId();
-      metaBox.textContent = `Sumber ID: ${device.source}`;
+      const account = resolveAccountId();
+      metaBox.textContent = account.label;
 
       try {
         const res = await fetch(`${SUPABASE_URL}/rest/v1/rpc/issue_or_check_key`, {
@@ -75,7 +76,7 @@
             "Authorization": `Bearer ${SUPABASE_ANON}`,
           },
           body: JSON.stringify({
-            p_hwid: device.id,
+            p_hwid: account.id,
             p_mode: "issue",
           }),
         });
@@ -89,7 +90,7 @@
 
         keyBox.textContent = data.key;
         const expText = data.expires_at ? new Date(data.expires_at).toLocaleString("id-ID") : "1 hari";
-        metaBox.textContent = `Berlaku sampai: ${expText}`;
+        metaBox.textContent = `${account.label} · Berlaku sampai: ${expText}`;
         copyBtn.disabled = false;
 
         copyBtn.onclick = async () => {

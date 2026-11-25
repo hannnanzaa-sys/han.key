@@ -3,57 +3,480 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>HANX HUB KEY</title>
+  <title>HANX HUB • Key Portal</title>
   <style>
-    * { box-sizing: border-box; font-family: system-ui, -apple-system, sans-serif; }
+    :root {
+      --bg-dark: #090710;
+      --card-bg: rgba(16, 12, 26, 0.88);
+      --surface: rgba(29, 21, 48, 0.82);
+      --border: rgba(178, 98, 255, 0.35);
+      --purple: #9333ea;
+      --purple-bright: #c084fc;
+      --text: #f8f5ff;
+      --muted: #a399be;
+      --ok: #4ade80;
+      --err: #fb7185;
+    }
+
+    * {
+      box-sizing: border-box;
+      font-family: "Inter", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
     body {
-      margin: 0; min-height: 100vh; display: grid; place-items: center; padding: 16px;
-      background: radial-gradient(circle at top, #24123d, #0d0b14 70%); color: #f8f5ff;
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px 14px;
+      background: var(--bg-dark);
+      color: var(--text);
+      overflow-x: hidden;
+      position: relative;
     }
+
+    .aura-bg {
+      position: fixed;
+      inset: -25%;
+      z-index: 0;
+      pointer-events: none;
+      background:
+        radial-gradient(circle at 22% 24%, rgba(147, 51, 234, 0.34), transparent 44%),
+        radial-gradient(circle at 78% 72%, rgba(109, 40, 217, 0.28), transparent 46%),
+        radial-gradient(circle at 50% 10%, rgba(192, 132, 252, 0.14), transparent 55%);
+      animation: auraFloat 9s ease-in-out infinite alternate;
+    }
+
+    @keyframes auraFloat {
+      0% { transform: scale(1) translate3d(0, 0, 0); }
+      100% { transform: scale(1.08) translate3d(0, -18px, 0); }
+    }
+
+    .wrap {
+      position: relative;
+      z-index: 1;
+      width: 100%;
+      max-width: 450px;
+    }
+
     .card {
-      width: 100%; max-width: 420px; background: #141021; border: 1px solid #523e7c;
-      border-radius: 16px; padding: 24px; box-shadow: 0 20px 50px rgba(0,0,0,.55);
+      position: relative;
+      background: var(--card-bg);
+      backdrop-filter: blur(16px);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 22px;
+      box-shadow: 0 24px 70px rgba(0, 0, 0, 0.72), 0 0 36px rgba(147, 51, 234, 0.16);
+      overflow: hidden;
     }
-    h1 { margin: 0 0 6px; font-size: 20px; }
-    p { margin: 0 0 18px; font-size: 13px; color: #9c94b2; line-height: 1.5; }
-    .key-box {
-      background: #1d1630; border: 1px solid #7e49c9; border-radius: 12px;
-      padding: 16px; text-align: center; font-size: 18px; font-weight: 700;
-      letter-spacing: 1px; color: #d8b4fe; word-break: break-all; margin-bottom: 12px;
+
+    .watermark {
+      position: absolute;
+      inset: 0;
+      background-position: center;
+      background-size: 260px;
+      background-repeat: no-repeat;
+      opacity: 0.08;
+      pointer-events: none;
+      z-index: 0;
+      filter: saturate(1.25);
     }
-    .meta { font-size: 12px; color: #9c94b2; margin-bottom: 16px; text-align: center; }
-    .err { color: #fb7185; font-size: 13px; text-align: center; margin-bottom: 12px; }
-    button {
-      width: 100%; padding: 12px; border: 0; border-radius: 10px; cursor: pointer;
-      background: #7e22ce; color: #fff; font-weight: 700; font-size: 14px;
+
+    .content {
+      position: relative;
+      z-index: 1;
     }
-    button:hover { background: #9333ea; }
-    button:disabled { opacity: 0.5; cursor: not-allowed; }
+
+    .header {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 18px;
+      padding-bottom: 14px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .logo-ring {
+      position: relative;
+      width: 54px;
+      height: 54px;
+      border-radius: 15px;
+      padding: 2px;
+      background: linear-gradient(135deg, #7e22ce, #ffffff 50%, #6b21a8);
+      background-size: 240% 240%;
+      animation: lightSweep 3.2s linear infinite;
+      flex-shrink: 0;
+      box-shadow: 0 0 20px rgba(168, 85, 247, 0.45);
+    }
+
+    @keyframes lightSweep {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    .logo-inner {
+      width: 100%;
+      height: 100%;
+      border-radius: 13px;
+      background: #120d1f;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+
+    .logo-inner img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .brand-title {
+      margin: 0;
+      font-size: 19px;
+      font-weight: 800;
+      letter-spacing: 0.4px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .pro-badge {
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      padding: 2px 7px;
+      border-radius: 999px;
+      background: rgba(168, 85, 247, 0.22);
+      color: var(--purple-bright);
+      border: 1px solid rgba(192, 132, 252, 0.45);
+    }
+
+    .brand-sub {
+      margin: 4px 0 0;
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .key-panel {
+      background: var(--surface);
+      border: 1px solid rgba(192, 132, 252, 0.35);
+      border-radius: 14px;
+      padding: 15px;
+      margin-bottom: 12px;
+    }
+
+    .key-label {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      color: var(--purple-bright);
+      font-weight: 700;
+      margin-bottom: 8px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .key-code {
+      font-size: 17px;
+      font-weight: 800;
+      letter-spacing: 1.1px;
+      text-align: center;
+      color: #ffffff;
+      padding: 10px 8px;
+      border-radius: 10px;
+      background: rgba(11, 8, 19, 0.85);
+      border: 1px dashed rgba(192, 132, 252, 0.4);
+      word-break: break-all;
+    }
+
+    .meta {
+      margin: 10px 0 14px;
+      font-size: 11.5px;
+      color: var(--muted);
+      text-align: center;
+      line-height: 1.45;
+    }
+
+    .err {
+      color: var(--err);
+      font-size: 12px;
+      text-align: center;
+      margin-bottom: 10px;
+      min-height: 16px;
+    }
+
+    .btn-primary {
+      width: 100%;
+      padding: 12px 14px;
+      border: 0;
+      border-radius: 12px;
+      cursor: pointer;
+      background: linear-gradient(135deg, #7e22ce, #a855f7);
+      color: #fff;
+      font-weight: 700;
+      font-size: 13.5px;
+      box-shadow: 0 8px 24px rgba(147, 51, 234, 0.38);
+      transition: transform 0.12s ease, filter 0.15s ease;
+    }
+
+    .btn-primary:hover:not(:disabled) {
+      filter: brightness(1.08);
+      transform: translateY(-1px);
+    }
+
+    .btn-primary:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .plans-section {
+      margin-top: 20px;
+      padding-top: 16px;
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .plans-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+
+    .plans-title {
+      font-size: 13px;
+      font-weight: 700;
+      color: #f3e8ff;
+    }
+
+    .plans-note {
+      font-size: 11px;
+      color: var(--muted);
+    }
+
+    .plans-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 9px;
+    }
+
+    .plan-card {
+      background: rgba(24, 17, 40, 0.85);
+      border: 1px solid rgba(148, 110, 210, 0.25);
+      border-radius: 12px;
+      padding: 11px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 8px;
+      transition: border-color 0.15s ease, transform 0.12s ease;
+    }
+
+    .plan-card:hover {
+      border-color: rgba(192, 132, 252, 0.65);
+      transform: translateY(-1px);
+    }
+
+    .plan-card.featured {
+      grid-column: span 2;
+      background: linear-gradient(135deg, rgba(88, 28, 135, 0.38), rgba(24, 17, 40, 0.92));
+      border-color: rgba(216, 180, 254, 0.5);
+    }
+
+    .plan-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      gap: 6px;
+    }
+
+    .plan-name {
+      font-size: 12.5px;
+      font-weight: 700;
+      color: #fff;
+    }
+
+    .plan-price {
+      font-size: 12px;
+      font-weight: 800;
+      color: var(--purple-bright);
+    }
+
+    .plan-btn {
+      width: 100%;
+      padding: 7px 10px;
+      border-radius: 8px;
+      border: 1px solid rgba(192, 132, 252, 0.35);
+      background: rgba(126, 34, 206, 0.28);
+      color: #f5ebff;
+      font-size: 11.5px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background 0.15s ease;
+    }
+
+    .plan-btn:hover {
+      background: rgba(147, 51, 234, 0.55);
+    }
+
+    .saweria-link {
+      display: block;
+      margin-top: 12px;
+      text-align: center;
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--purple-bright);
+      text-decoration: none;
+      padding: 8px 10px;
+      border-radius: 10px;
+      border: 1px solid rgba(192, 132, 252, 0.28);
+      background: rgba(24, 17, 40, 0.65);
+    }
+
+    .saweria-link:hover {
+      background: rgba(126, 34, 206, 0.25);
+    }
   </style>
 </head>
 <body>
-  <div class="card">
-    <h1>🔑 HANX HUB KEY</h1>
-    <p>Key otomatis dibuat dan terikat ke username kamu (berlaku 1 hari / 24 jam).</p>
-    <div id="keyBox" class="key-box">Memuat key…</div>
-    <div id="metaBox" class="meta">Mendeteksi username…</div>
-    <div id="errBox" class="err"></div>
-    <button id="copyBtn" type="button" disabled>Copy Key</button>
-  </div>
+  <div class="aura-bg"></div>
+
+  <main class="wrap">
+    <section class="card">
+      <div id="watermark" class="watermark"></div>
+
+      <div class="content">
+        <header class="header">
+          <div class="logo-ring">
+            <div class="logo-inner">
+              <img id="hubLogo" alt="HANX HUB Logo" />
+            </div>
+          </div>
+          <div>
+            <h1 class="brand-title">HANX HUB <span class="pro-badge">KEY PORTAL</span></h1>
+            <p class="brand-sub">Auto-generate key • Terikat ke username Roblox</p>
+          </div>
+        </header>
+
+        <div class="key-panel">
+          <div class="key-label">
+            <span>FREE KEY (24 JAM)</span>
+            <span id="statusBadge">ACTIVE</span>
+          </div>
+          <div id="keyBox" class="key-code">Memuat key…</div>
+        </div>
+
+        <div id="metaBox" class="meta">Mendeteksi identitas akun…</div>
+        <div id="errBox" class="err"></div>
+        <button id="copyBtn" class="btn-primary" type="button" disabled>Copy Key</button>
+
+        <section class="plans-section" aria-label="Paket Key Berbayar">
+          <div class="plans-head">
+            <span class="plans-title">💎 Upgrade Key Durasi</span>
+            <span class="plans-note">1 Key = 1 Username</span>
+          </div>
+
+          <div class="plans-grid">
+            <div class="plan-card">
+              <div class="plan-top">
+                <span class="plan-name">1 Hari</span>
+                <span class="plan-price">Gratis / Lite</span>
+              </div>
+              <button class="plan-btn" type="button" data-plan="1d">Pilih 1 Hari</button>
+            </div>
+
+            <div class="plan-card">
+              <div class="plan-top">
+                <span class="plan-name">3 Hari</span>
+                <span class="plan-price">Paket 3D</span>
+              </div>
+              <button class="plan-btn" type="button" data-plan="3d">Beli 3 Hari</button>
+            </div>
+
+            <div class="plan-card">
+              <div class="plan-top">
+                <span class="plan-name">7 Hari</span>
+                <span class="plan-price">Paket 7D</span>
+              </div>
+              <button class="plan-btn" type="button" data-plan="7d">Beli 7 Hari</button>
+            </div>
+
+            <div class="plan-card">
+              <div class="plan-top">
+                <span class="plan-name">30 Hari</span>
+                <span class="plan-price">Paket 30D</span>
+              </div>
+              <button class="plan-btn" type="button" data-plan="30d">Beli 30 Hari</button>
+            </div>
+
+            <div class="plan-card featured">
+              <div class="plan-top">
+                <span class="plan-name">👑 Permanent Access</span>
+                <span class="plan-price">Lifetime Key</span>
+              </div>
+              <button class="plan-btn" type="button" data-plan="perm">Beli Permanent</button>
+            </div>
+          </div>
+
+          <a class="saweria-link" href="https://saweria.co/hanxhub" target="_blank" rel="noopener noreferrer">
+            ☕ Order Key via Saweria (saweria.co/hanxhub)
+          </a>
+        </section>
+      </div>
+    </section>
+  </main>
 
   <script>
     const SUPABASE_URL = "https://hmfmhraaoowaclkjgoyo.supabase.co";
     const SUPABASE_ANON = "sb_publishable_Epc5E_uB8e0BiOwnxXPDIQ_33BrW5Di";
+    const ROBLOX_ASSET_ID = "122823093583910";
+    const ORDER_LINK = "https://saweria.co/hanxhub";
 
     const keyBox = document.getElementById("keyBox");
     const metaBox = document.getElementById("metaBox");
     const errBox = document.getElementById("errBox");
     const copyBtn = document.getElementById("copyBtn");
+    const hubLogo = document.getElementById("hubLogo");
+    const watermark = document.getElementById("watermark");
+
+    (async function loadBrandLogo() {
+      const fallbackSvg = "data:image/svg+xml;utf8," + encodeURIComponent(`
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128">
+          <defs>
+            <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0%" stop-color="#9333ea"/>
+              <stop offset="100%" stop-color="#3b0764"/>
+            </linearGradient>
+          </defs>
+          <rect width="128" height="128" rx="28" fill="url(#g)"/>
+          <text x="64" y="78" text-anchor="middle" fill="#ffffff" font-family="Arial, sans-serif" font-size="44" font-weight="900">HH</text>
+        </svg>
+      `);
+
+      hubLogo.src = fallbackSvg;
+      watermark.style.backgroundImage = `url("${fallbackSvg}")`;
+
+      try {
+        const apiUrl = `https://thumbnails.roblox.com/v1/assets?assetIds=${ROBLX_ASSET_ID}&returnPolicy=PlaceHolder&size=420x420&format=Png&isCircular=false`;
+        const r = await fetch(apiUrl);
+        const json = await r.json();
+        const imgUrl = json && json.data && json.data[0] && json.data[0].imageUrl;
+        if (imgUrl) {
+          hubLogo.src = imgUrl;
+          watermark.style.backgroundImage = `url("${imgUrl}")`;
+        }
+      } catch (_) {}
+    })();
 
     function resolveAccountId() {
       const params = new URLSearchParams(window.location.search);
       const urlId = (params.get("hwid") || params.get("user") || params.get("username") || "").trim();
-      if (urlId) return { id: urlId, label: `Akun: ${urlId}` };
+      if (urlId) return { id: urlId, label: `Username: ${urlId}` };
 
       let webId = localStorage.getItem("hanx_web_device_id");
       if (!webId) {
@@ -90,7 +513,7 @@
 
         keyBox.textContent = data.key;
         const expText = data.expires_at ? new Date(data.expires_at).toLocaleString("id-ID") : "1 hari";
-        metaBox.textContent = `${account.label} · Berlaku sampai: ${expText}`;
+        metaBox.textContent = `${account.label} • Berlaku sampai: ${expText}`;
         copyBtn.disabled = false;
 
         copyBtn.onclick = async () => {
@@ -102,11 +525,24 @@
             errBox.textContent = "Gagal menyalin otomatis, silakan salin manual.";
           }
         };
-      } catch (e) {
+      } catch (_) {
         keyBox.textContent = "ERROR";
         errBox.textContent = "Tidak dapat terhubung ke Supabase.";
       }
     }
+
+    document.querySelectorAll(".plan-btn").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const plan = btn.getAttribute("data-plan");
+        if (plan === "1d" && !copyBtn.disabled) {
+          copyBtn.click();
+          return;
+        }
+        errBox.style.color = "#d8b4fe";
+        errBox.textContent = `Paket ${plan.toUpperCase()} dipilih — membuka Saweria...`;
+        window.open(ORDER_LINK, "_blank", "noopener,noreferrer");
+      });
+    });
 
     loadKey();
   </script>
